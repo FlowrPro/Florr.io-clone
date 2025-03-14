@@ -42,6 +42,9 @@ socket.on('loginFailure', (message) => {
 
 socket.on('registerSuccess', (userData) => {
     alert("Register Successful, Please Log in.");
+    // Clear the input fields after successful registration.
+    usernameInput.value = '';
+    passwordInput.value = '';
 });
 
 socket.on('registerFailure', (message) => {
@@ -95,7 +98,7 @@ function updateInventoryDisplay() {
         slot.style.width = '30px';
         slot.style.height = '30px';
         slot.style.display = 'inline-block';
-        slot.textContent = player.inventory[i] || ''; // Display petal name if available
+        slot.textContent = player.inventory[i] || '';
         inventorySlotsDiv.appendChild(slot);
     }
 }
