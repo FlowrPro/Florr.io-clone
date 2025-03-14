@@ -41,7 +41,9 @@ socket.on('loginFailure', (message) => {
 });
 
 socket.on('registerSuccess', (userData) => {
-    alert("Register Successful, Please Log in.");
+    alert("Register Successful, Logging in...");
+    // Immediately log the user in after registration
+    socket.emit('login', { username: userData.username, password: passwordInput.value });
     // Clear the input fields after successful registration.
     usernameInput.value = '';
     passwordInput.value = '';
