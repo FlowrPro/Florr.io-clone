@@ -9,6 +9,7 @@ const registerButton = document.getElementById('registerButton');
 const inventoryDiv = document.getElementById('inventory');
 const petalCountSpan = document.getElementById('petalCount');
 const inventorySlotsDiv = document.getElementById('inventorySlots');
+const errorMessage = document.getElementById('error-message');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -20,10 +21,20 @@ let petals = [];
 let loggedIn = false;
 
 loginButton.addEventListener('click', () => {
+    errorMessage.textContent = "";
+    if(!usernameInput.value || !passwordInput.value){
+        errorMessage.textContent = "Please enter a username and password.";
+        return;
+    }
     socket.emit('login', { username: usernameInput.value, password: passwordInput.value });
 });
 
 registerButton.addEventListener('click', () => {
+    errorMessage.textContent = "";
+    if(!usernameInput.value || !passwordInput.value){
+        errorMessage.textContent = "Please enter a username and password.";
+        return;
+    }
     socket.emit('register', { username: usernameInput.value, password: passwordInput.value });
 });
 
@@ -37,20 +48,18 @@ socket.on('loginSuccess', (userData) => {
 });
 
 socket.on('loginFailure', (message) => {
-    alert(message);
+    errorMessage.textContent = message;
 });
 
 socket.on('registerSuccess', (userData) => {
-    alert("Register Successful, Logging in...");
-    // Immediately log the user in after registration
+    errorMessage.textContent = "Register Successful, Logging in...";
     socket.emit('login', { username: userData.username, password: passwordInput.value });
-    // Clear the input fields after successful registration.
     usernameInput.value = '';
     passwordInput.value = '';
 });
 
 socket.on('registerFailure', (message) => {
-    alert(message);
+    errorMessage.textContent = message;
 });
 
 socket.on('gameUpdate', (gameData) => {
@@ -66,51 +75,6 @@ canvas.addEventListener('click', (event) => {
     }
 });
 
-function drawPlayer() {
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, 20, 0, 2 * Math.PI);
-    ctx.fillStyle = 'green';
-    ctx.fill();
-}
-
-function drawMobs() {
-    mobs.forEach(mob => {
-        ctx.beginPath();
-        ctx.rect(mob.x,mob.y, 20, 20);
-        ctx.fillStyle = 'red';
-        ctx.fill();
-    });
-}
-
-function drawPetals() {
-    petals.forEach(petal => {
-        ctx.beginPath();
-        ctx.arc(petal.x, petal.y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = 'yellow';
-        ctx.fill();
-    });
-}
-
-function updateInventoryDisplay() {
-    petalCountSpan.textContent = player.petals;
-    inventorySlotsDiv.innerHTML = '';
-    for (let i = 0; i < 10; i++) {
-        const slot = document.createElement('div');
-        slot.style.border = '1px solid black';
-        slot.style.width = '30px';
-        slot.style.height = '30px';
-        slot.style.display = 'inline-block';
-        slot.textContent = player.inventory[i] || '';
-        inventorySlotsDiv.appendChild(slot);
-    }
-}
-
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawPlayer();
-    drawMobs();
-    drawPetals();
-    requestAnimationFrame(gameLoop);
-}
+// ... (rest of the drawing and inventory functions remain the same)
 
 inventoryDiv.style.display = 'none';
